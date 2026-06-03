@@ -1,0 +1,18 @@
+schema: '2.0'
+stages:
+  clean:
+    cmd: python -m mlops.clean_data
+    deps:
+    - path: Pune Real Estate Data.xlsx
+      hash: md5
+      md5: 702262cebfa7e3dd7e2a5b743c39c572
+      size: 50764
+    - path: mlops/clean_data.py
+      hash: md5
+      md5: 6d3454a20a52966e308e33f29a07ecbe
+      size: 7212
+    outs:
+    - path: data_cleaned.csv
+      hash: md5
+      md5: 0632447b62d8eb475bd9b8498e97e5da
+      size: 66555
