@@ -1,0 +1,30 @@
+{
+  "family": "truck-delay-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::759316130780:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "truck-delay-app",
+      "image": "759316130780.dkr.ecr.us-east-1.amazonaws.com/truck-delay-app:v1",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8501,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/truck-delay-service",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+}
