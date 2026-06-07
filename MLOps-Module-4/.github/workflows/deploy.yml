@@ -46,7 +46,7 @@ jobs:
           # The Prerequisites section above tells you to copy `Module 4/labs/M4_Lab3_Docker_Compose/app/`
           # to the REPO ROOT, so `.` is the default. Override `BUILD_CONTEXT` as a repo variable
           # (Settings → Variables) if you've nested it deeper in the repo.
-          BUILD_CONTEXT: ${{ vars.BUILD_CONTEXT || '.' }}
+          BUILD_CONTEXT: ${{ vars.BUILD_CONTEXT || 'MLOps-Module-4' }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG "$BUILD_CONTEXT"
           docker tag  $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  $ECR_REGISTRY/$ECR_REPOSITORY:latest
