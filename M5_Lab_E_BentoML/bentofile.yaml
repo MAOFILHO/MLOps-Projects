@@ -1,0 +1,13 @@
+service: "service:svc"
+
+include:
+  - "service.py"
+
+python:
+  requirements_txt: ./requirements.txt
+
+models:
+  - truck_delay_xgb:latest
+
+docker:
+  python_version: "3.12"

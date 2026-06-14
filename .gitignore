@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+secrets.txt
+SecureLife-MCP-Project/
+M5_Lab_E_BentoML/.venv-bentoml/
+.venv*/
+SecureLife-MCP-Project/
