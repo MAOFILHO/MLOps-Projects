@@ -5,6 +5,10 @@
   "cpu": "512",
   "memory": "1024",
   "executionRoleArn": "arn:aws:iam::759316130780:role/ecsTaskExecutionRole",
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
   "containerDefinitions": [
     {
       "name": "truck-delay-app",

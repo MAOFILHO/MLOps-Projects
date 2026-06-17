@@ -270,7 +270,7 @@ Then start a new container with environment variables:
 
 ```bash
 docker run -d -p 8501:8501 --name truck-app \
-  -e DB_HOST=your-rds-endpoint.ap-south-1.rds.amazonaws.com \
+  -e DB_HOST=your-rds-endpoint.us-east-1.rds.amazonaws.com \
   -e DB_PORT=5432 \
   -e DB_NAME=truck_delay_db \
   -e DB_USER=mlops_admin \
@@ -283,7 +283,7 @@ docker run -d -p 8501:8501 --name truck-app \
 > **🪟 Windows Command Prompt:** Replace the `\` line continuations with `^`:
 > ```
 > docker run -d -p 8501:8501 --name truck-app ^
->   -e DB_HOST=your-rds-endpoint.ap-south-1.rds.amazonaws.com ^
+>   -e DB_HOST=your-rds-endpoint.us-east-1.rds.amazonaws.com ^
 >   -e DB_PORT=5432 ^
 >   -e DEMO_MODE=true ^
 >   truck-delay-app:v1
@@ -292,7 +292,7 @@ docker run -d -p 8501:8501 --name truck-app \
 > **🪟 Windows PowerShell:** Use backtick `` ` `` for line continuation:
 > ```powershell
 > docker run -d -p 8501:8501 --name truck-app `
->   -e DB_HOST=your-rds-endpoint.ap-south-1.rds.amazonaws.com `
+>   -e DB_HOST=your-rds-endpoint.us-east-1.rds.amazonaws.com `
 >   -e DB_PORT=5432 `
 >   -e DEMO_MODE=true `
 >   truck-delay-app:v1

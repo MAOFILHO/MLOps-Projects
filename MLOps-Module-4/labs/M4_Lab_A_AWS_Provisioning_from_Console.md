@@ -49,12 +49,12 @@ That's the entire AWS surface for M4. Everything else (building images, running 
 |---|---|---|
 | AWS account with permissions for ECR + IAM | You'll be creating an ECR repo and inspecting your IAM user | AWS Console → IAM → Users → your username → Permissions tab |
 | AWS Console open in a browser | The whole lab is Console-based | https://console.aws.amazon.com |
-| Region picked (same as M3 if you ran it) | Keep it consistent — M5 will deploy ECS in the same region | Top-right corner of AWS Console. India: `ap-south-1` (Mumbai) |
+| Region picked (same as M3 if you ran it) | Keep it consistent — M5 will deploy ECS in the same region | Top-right corner of AWS Console. India: `us-east-1` (Mumbai) |
 | AWS CLI v2 installed | Step 4 uses `aws ecr get-login-password` | `aws --version` returns `aws-cli/2.x.x` |
 | Docker Desktop running | Step 4's smoke test logs Docker into ECR | `docker --version` returns `Docker version 27.x.x` |
 | Your 12-digit AWS account ID | You'll need it for the ECR URI | Top-right of Console (click your name → see "Account ID"), or run `aws sts get-caller-identity` |
 
-> **One-time setup:** click the region selector at top-right of the Console and **lock in the same region you used for M3** (or pick `ap-south-1` if M4 is your first module). Mixing regions across labs is the #1 cause of "I created the repo but can't find it" confusion.
+> **One-time setup:** click the region selector at top-right of the Console and **lock in the same region you used for M3** (or pick `us-east-1` if M4 is your first module). Mixing regions across labs is the #1 cause of "I created the repo but can't find it" confusion.
 
 ---
 
@@ -178,7 +178,7 @@ This is a 30-second sanity check that everything is wired up. If it fails, Lab 3
 ### Run it
 
 ```bash
-# Replace <REGION> with the region where you created the repo (e.g. ap-south-1)
+# Replace <REGION> with the region where you created the repo (e.g. us-east-1)
 # Replace <ACCOUNT_ID> with your 12-digit account ID
 
 aws ecr get-login-password --region <REGION> \
@@ -271,7 +271,7 @@ Nothing. ECR repos don't leave behind any orphan resources. IAM permissions stay
 |---|---|---|
 | ECR storage | ~$0.10/GB/month (₹8/GB/month at the time of writing) | 5 images × 1.5 GB ≈ ₹60/month |
 | ECR data transfer **in** (push from your laptop) | Free | ₹0 |
-| ECR data transfer **out** (pull) within the same region (e.g. ECS in `ap-south-1` pulling) | Free | ₹0 |
+| ECR data transfer **out** (pull) within the same region (e.g. ECS in `us-east-1` pulling) | Free | ₹0 |
 | ECR data transfer **out** to another region or the public internet | $0.09/GB | Avoid this — pull from the same region |
 | Image scanning (Amazon Inspector) | Free for "basic" scanning | ₹0 |
 

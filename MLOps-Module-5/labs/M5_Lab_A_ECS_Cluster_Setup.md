@@ -85,7 +85,7 @@ ECS has **two launch types** for the compute that runs your containers. Picking 
 
 **For Truck Delay (Streamlit, low-to-medium QPS, bursty), Fargate is clearly right.** We pay for what we use, AWS handles the underlying OS + patching, and the per-task billing means scaling to zero literally costs ₹0.
 
-### Pricing (ap-south-1, Fargate Linux/x86)
+### Pricing (us-east-1, Fargate Linux/x86)
 
 | Component | Rate | Cost for our task (0.5 vCPU, 1 GB) |
 |---|---|---|
@@ -121,13 +121,13 @@ Verify your M4 ECR repository has at least one image:
 ```bash
 aws ecr describe-images \
     --repository-name truck-delay-app \
-    --region ap-south-1
+    --region us-east-1
 ```
 
 You should see at least one entry under `imageDetails` with an `imageTag` of `v1`. Note the full image URI — you'll need it in Step 3:
 
 ```
-<ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com/truck-delay-app:v1
+<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/truck-delay-app:v1
 ```
 
 > **Don't have an image yet?** Two options:
@@ -139,10 +139,10 @@ You should see at least one entry under `imageDetails` with an `imageTag` of `v1
 >
 >    # From here on, use your own private ECR (M5 + later modules push new versions here)
 >    docker tag public.ecr.aws/h9p3c4g2/truck-delay-app:v1 \
->              <YOUR_ACCOUNT>.dkr.ecr.ap-south-1.amazonaws.com/truck-delay-app:v1
->    aws ecr get-login-password --region ap-south-1 \
->        | docker login --username AWS --password-stdin <YOUR_ACCOUNT>.dkr.ecr.ap-south-1.amazonaws.com
->    docker push <YOUR_ACCOUNT>.dkr.ecr.ap-south-1.amazonaws.com/truck-delay-app:v1
+>              <YOUR_ACCOUNT>.dkr.ecr.us-east-1.amazonaws.com/truck-delay-app:v1
+>    aws ecr get-login-password --region us-east-1 \
+>        | docker login --username AWS --password-stdin <YOUR_ACCOUNT>.dkr.ecr.us-east-1.amazonaws.com
+>    docker push <YOUR_ACCOUNT>.dkr.ecr.us-east-1.amazonaws.com/truck-delay-app:v1
 >    ```
 >    `h9p3c4g2` is the K21 Academy course instructor's ECR Public alias for this cohort — the image is anonymous-readable so no AWS account or login is required to `docker pull` it. If your instructor publishes from a different account, swap in the alias they share.
 >
@@ -165,8 +165,8 @@ Your IAM user needs at least:
 aws sts get-caller-identity --query Account --output text
 # Returns your 12-digit account ID -- note it as <ACCOUNT_ID>
 
-# Region you've been using throughout M3/M4 — usually ap-south-1
-export AWS_REGION=ap-south-1
+# Region you've been using throughout M3/M4 — usually us-east-1
+export AWS_REGION=us-east-1
 ```
 
 ---
@@ -197,16 +197,16 @@ A **cluster** in ECS is just a logical group of compute. For Fargate launches th
 ```bash
 aws ecs create-cluster \
     --cluster-name m5-truck-delay-cluster \
-    --region ap-south-1
+    --region us-east-1
 ```
 
 ### Verify
 
 ```bash
-aws ecs list-clusters --region ap-south-1
+aws ecs list-clusters --region us-east-1
 ```
 
-Expected: an entry like `arn:aws:ecs:ap-south-1:<ACCOUNT_ID>:cluster/m5-truck-delay-cluster`.
+Expected: an entry like `arn:aws:ecs:us-east-1:<ACCOUNT_ID>:cluster/m5-truck-delay-cluster`.
 
 ### Fargate vs EC2 — when to pick which
 
@@ -298,13 +298,13 @@ Nothing else. Specifically, the task execution role does NOT grant your containe
 ```bash
 aws logs create-log-group \
     --log-group-name /ecs/truck-delay-service \
-    --region ap-south-1
+    --region us-east-1
 
 # Optional but recommended -- keep 7 days of logs, not 'never expire' (the default)
 aws logs put-retention-policy \
     --log-group-name /ecs/truck-delay-service \
     --retention-in-days 7 \
-    --region ap-south-1
+    --region us-east-1
 ```
 
 > **🪟 Windows Git Bash users**: arguments starting with `/` get mangled into Windows paths by MSYS. Prefix every command above with `MSYS_NO_PATHCONV=1` — e.g. `MSYS_NO_PATHCONV=1 aws logs create-log-group ...`. Or use PowerShell where this isn't an issue. (See top-of-lab callout for the full pattern.)
@@ -313,7 +313,7 @@ Verify:
 ```bash
 aws logs describe-log-groups \
     --log-group-name-prefix /ecs/truck-delay-service \
-    --region ap-south-1 \
+    --region us-east-1 \
     --query "logGroups[].{Name:logGroupName, Retention:retentionInDays}" --output table
 ```
 
@@ -345,7 +345,7 @@ This is the "recipe" — ECS uses it to launch concrete tasks.
   "containerDefinitions": [
     {
       "name": "truck-delay-app",
-      "image": "<ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com/truck-delay-app:v1",
+      "image": "<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/truck-delay-app:v1",
       "essential": true,
       "portMappings": [
         {
@@ -357,7 +357,7 @@ This is the "recipe" — ECS uses it to launch concrete tasks.
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/truck-delay-service",
-          "awslogs-region": "ap-south-1",
+          "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
       }
@@ -389,7 +389,7 @@ Replace `<ACCOUNT_ID>` with your 12-digit account ID (twice — once in `executi
 ```bash
 aws ecs register-task-definition \
     --cli-input-json file://truck-delay-task.json \
-    --region ap-south-1
+    --region us-east-1
 ```
 
 Expected output (key fields):
@@ -397,7 +397,7 @@ Expected output (key fields):
 ```json
 {
   "taskDefinition": {
-    "taskDefinitionArn": "arn:aws:ecs:ap-south-1:<ACCOUNT_ID>:task-definition/truck-delay-task:1",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:<ACCOUNT_ID>:task-definition/truck-delay-task:1",
     "family": "truck-delay-task",
     "revision": 1,
     "status": "ACTIVE",
@@ -423,21 +423,21 @@ ECS Fargate tasks run in a VPC. Easiest path: use your account's default VPC.
 VPC_ID=$(aws ec2 describe-vpcs \
     --filters "Name=isDefault,Values=true" \
     --query "Vpcs[0].VpcId" --output text \
-    --region ap-south-1)
+    --region us-east-1)
 echo "VPC: $VPC_ID"
 
 # Subnets in the default VPC (we'll use these) -- comma-joined for the --network-configuration shorthand
 SUBNETS=$(aws ec2 describe-subnets \
     --filters "Name=vpc-id,Values=$VPC_ID" \
     --query "Subnets[].SubnetId" --output text \
-    --region ap-south-1 | tr '\t' ',')
+    --region us-east-1 | tr '\t' ',')
 echo "Subnets: $SUBNETS"
 
 # Default SG (we'll create a more scoped one in Lab B)
 SG_ID=$(aws ec2 describe-security-groups \
     --filters "Name=vpc-id,Values=$VPC_ID" "Name=group-name,Values=default" \
     --query "SecurityGroups[0].GroupId" --output text \
-    --region ap-south-1)
+    --region us-east-1)
 echo "SG: $SG_ID"
 ```
 
@@ -446,17 +446,17 @@ echo "SG: $SG_ID"
 ```powershell
 $VPC_ID = aws ec2 describe-vpcs `
     --filters "Name=isDefault,Values=true" `
-    --query "Vpcs[0].VpcId" --output text --region ap-south-1
+    --query "Vpcs[0].VpcId" --output text --region us-east-1
 "VPC: $VPC_ID"
 
 $SUBNETS = (aws ec2 describe-subnets `
     --filters "Name=vpc-id,Values=$VPC_ID" `
-    --query "Subnets[].SubnetId" --output text --region ap-south-1) -replace "`t", ","
+    --query "Subnets[].SubnetId" --output text --region us-east-1) -replace "`t", ","
 "Subnets: $SUBNETS"
 
 $SG_ID = aws ec2 describe-security-groups `
     --filters "Name=vpc-id,Values=$VPC_ID" "Name=group-name,Values=default" `
-    --query "SecurityGroups[0].GroupId" --output text --region ap-south-1
+    --query "SecurityGroups[0].GroupId" --output text --region us-east-1
 "SG: $SG_ID"
 ```
 
@@ -472,7 +472,7 @@ aws ec2 authorize-security-group-ingress \
     --protocol tcp \
     --port 8501 \
     --cidr 0.0.0.0/0 \
-    --region ap-south-1
+    --region us-east-1
 ```
 
 > **Security note:** `0.0.0.0/0` is "the entire internet". For Lab A this is fine because (a) Fargate tasks get private IPs by default — only reachable from inside the VPC, and (b) we'll tear down at the end of the session. In Lab B you'll restrict 8501 to "only from the ALB".
@@ -499,7 +499,7 @@ aws ecs create-service \
     --desired-count 1 \
     --launch-type FARGATE \
     --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$SG_ID],assignPublicIp=ENABLED}" \
-    --region ap-south-1
+    --region us-east-1
 ```
 
 The `assignPublicIp=ENABLED` matters: it gives the Fargate task a public IP so it can pull the image from ECR. (Alternative: put the task in a private subnet with a NAT gateway. Public IP is simpler for Lab A; we'll add a NAT gateway / private subnets in a later module.)
@@ -513,7 +513,7 @@ aws ecs describe-services \
     --cluster m5-truck-delay-cluster \
     --services truck-delay-service \
     --query "services[0].{Desired:desiredCount, Running:runningCount, Pending:pendingCount, Events:events[0:3].message}" \
-    --region ap-south-1
+    --region us-east-1
 ```
 
 Expected progression (re-run every 10 seconds):
@@ -537,7 +537,7 @@ TASK_ARN=$(aws ecs list-tasks \
     --cluster m5-truck-delay-cluster \
     --service-name truck-delay-service \
     --query "taskArns[0]" --output text \
-    --region ap-south-1)
+    --region us-east-1)
 echo "Task: $TASK_ARN"
 
 # Find the ENI attached to this task
@@ -546,7 +546,7 @@ ENI_ID=$(aws ecs describe-tasks \
     --tasks $TASK_ARN \
     --query "tasks[0].attachments[0].details[?name=='networkInterfaceId'].value | [0]" \
     --output text \
-    --region ap-south-1)
+    --region us-east-1)
 echo "ENI: $ENI_ID"
 
 # Get the ENI's public IP
@@ -554,7 +554,7 @@ PUBLIC_IP=$(aws ec2 describe-network-interfaces \
     --network-interface-ids $ENI_ID \
     --query "NetworkInterfaces[0].Association.PublicIp" \
     --output text \
-    --region ap-south-1)
+    --region us-east-1)
 echo "Public IP: $PUBLIC_IP"
 
 echo ""
@@ -591,7 +591,7 @@ When something goes wrong, the logs are your first stop.
 ```bash
 aws logs tail /ecs/truck-delay-service \
     --follow \
-    --region ap-south-1
+    --region us-east-1
 ```
 
 The `--follow` flag tails in real-time. Hit Ctrl-C to stop. Useful when debugging "why does my task keep dying" — you'll see the Python traceback at task exit.
@@ -644,15 +644,15 @@ Lab B also tightens the security group so only the ALB can reach port 8501 on th
 
 ```bash
 # Cluster
-aws ecs create-cluster --cluster-name m5-truck-delay-cluster --region ap-south-1
+aws ecs create-cluster --cluster-name m5-truck-delay-cluster --region us-east-1
 
 # Pre-create the log group (Step 2.5 -- required because the managed execution role
 # policy doesn't include logs:CreateLogGroup)
-aws logs create-log-group --log-group-name /ecs/truck-delay-service --region ap-south-1
-aws logs put-retention-policy --log-group-name /ecs/truck-delay-service --retention-in-days 7 --region ap-south-1
+aws logs create-log-group --log-group-name /ecs/truck-delay-service --region us-east-1
+aws logs put-retention-policy --log-group-name /ecs/truck-delay-service --retention-in-days 7 --region us-east-1
 
 # Task definition
-aws ecs register-task-definition --cli-input-json file://truck-delay-task.json --region ap-south-1
+aws ecs register-task-definition --cli-input-json file://truck-delay-task.json --region us-east-1
 
 # Service
 aws ecs create-service \
@@ -662,13 +662,13 @@ aws ecs create-service \
     --desired-count 1 \
     --launch-type FARGATE \
     --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$SG_ID],assignPublicIp=ENABLED}" \
-    --region ap-south-1
+    --region us-east-1
 
 # Status
-aws ecs describe-services --cluster m5-truck-delay-cluster --services truck-delay-service --region ap-south-1
+aws ecs describe-services --cluster m5-truck-delay-cluster --services truck-delay-service --region us-east-1
 
 # Logs
-aws logs tail /ecs/truck-delay-service --follow --region ap-south-1
+aws logs tail /ecs/truck-delay-service --follow --region us-east-1
 
 # Find public IP of running task (Step 6 script — paste into your shell)
 ```

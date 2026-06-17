@@ -467,7 +467,7 @@ If this fails with "Unable to locate credentials", run `aws configure` and enter
 
 ```bash
 # Pick a region (same region you'll use in M5 for ECS)
-REGION=ap-south-1     # ap-south-1 (Mumbai) is the M3/M5 default
+REGION=us-east-1     # us-east-1 (Mumbai) is the M3/M5 default
 
 aws ecr create-repository \
     --repository-name truck-delay-app \
@@ -479,7 +479,7 @@ aws ecr create-repository \
 
 Expected output (one line — write it down):
 ```
-<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.ap-south-1.amazonaws.com/truck-delay-app
+<YOUR_AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/truck-delay-app
 ```
 
 That's your **ECR repository URI**. Section 10 needs it.
@@ -513,7 +513,7 @@ Three sub-steps: authenticate Docker to ECR, tag the local image with the ECR UR
 ### Step 10.1 — Docker login to ECR
 
 ```bash
-REGION=ap-south-1
+REGION=us-east-1
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 
 aws ecr get-login-password --region $REGION \
@@ -528,7 +528,7 @@ Login Succeeded
 
 **🪟 PowerShell variant:**
 ```powershell
-$REGION  = "ap-south-1"
+$REGION  = "us-east-1"
 $ACCOUNT = aws sts get-caller-identity --query Account --output text
 
 aws ecr get-login-password --region $REGION | `
@@ -563,7 +563,7 @@ docker push $ECR_URI:latest
 
 Expected (truncated):
 ```
-The push refers to repository [<account>.dkr.ecr.ap-south-1.amazonaws.com/truck-delay-app]
+The push refers to repository [<account>.dkr.ecr.us-east-1.amazonaws.com/truck-delay-app]
 e6d249f228d6: Pushed
 e113665b194b: Pushed
 6ee81f006120: Pushed
@@ -620,7 +620,7 @@ Expected:
 ```
 v1: Pulling from truck-delay-app
 ... (downloads each layer)
-Status: Downloaded newer image for <account>.dkr.ecr.ap-south-1.amazonaws.com/truck-delay-app:v1
+Status: Downloaded newer image for <account>.dkr.ecr.us-east-1.amazonaws.com/truck-delay-app:v1
 ```
 
 Pull time is similar to push time (depends on **download** bandwidth this time).
@@ -653,7 +653,7 @@ ECR storage costs ~$0.10/GB/month (~₹8/GB/month) — one image at ~600 MB is ~
 If you want to delete everything M4 created:
 
 ```bash
-REGION=ap-south-1
+REGION=us-east-1
 
 # 1. Delete the ECR repo (--force lets you delete even if it has images)
 aws ecr delete-repository \
@@ -729,7 +729,7 @@ docker builder prune --all --force
 | `aws ecr create-repository` fails with `AccessDeniedException` | IAM user lacks ECR permissions | Attach `AmazonEC2ContainerRegistryFullAccess` to your IAM user |
 | `docker push` fails: "no basic auth credentials" | Login expired (12-hour TTL) | Re-run Step 10.1 (the `aws ecr get-login-password \| docker login` command) |
 | `docker push` fails: "denied: User is not authorized to perform: ecr:InitiateLayerUpload" | Login worked but push permission missing | The `AmazonEC2ContainerRegistryFullAccess` policy includes push. Confirm it's attached. PowerUser policy also works. |
-| Push completes but image not visible in Console | Wrong region selected in Console | Top-right of Console → switch to the region you pushed to (`ap-south-1` in this guide) |
+| Push completes but image not visible in Console | Wrong region selected in Console | Top-right of Console → switch to the region you pushed to (`us-east-1` in this guide) |
 | `docker push` is extremely slow | Limited upload bandwidth (most home connections cap upload at 10-25 Mbps) | Just wait, or run from a workstation with better upload (datacenter / office connection) |
 
 ---
@@ -754,7 +754,7 @@ sleep 15 && curl -sI http://localhost:8501/_stcore/health
 docker stop td && docker rm td
 
 # ECR
-REGION=ap-south-1
+REGION=us-east-1
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 ECR_URI=$ACCOUNT.dkr.ecr.$REGION.amazonaws.com/truck-delay-app
 
