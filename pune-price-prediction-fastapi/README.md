@@ -2,7 +2,7 @@
 
 An end-to-end machine learning project that predicts residential property prices in Pune (in ₹ Lakhs) and returns a 95% confidence interval. The project ships a trained ensemble model behind a **FastAPI** inference service and a lightweight **HTML/CSS/JS frontend**.
 
----
+
 
 ## Features
 
@@ -13,7 +13,7 @@ An end-to-end machine learning project that predicts residential property prices
 - **Pydantic v2 schemas** for typed request/response validation
 - **Test script** to smoke-test all endpoints
 
----
+
 
 ## Project Structure
 
@@ -43,7 +43,7 @@ Pune Price Prediction Project/
 └── README.md
 ```
 
----
+
 
 ## Prerequisites
 
@@ -51,7 +51,7 @@ Pune Price Prediction Project/
 - VS Code (recommended)
 - A modern browser for the frontend
 
----
+
 
 ## Setup
 
@@ -92,7 +92,7 @@ The `inference.py` module uses NLTK for description preprocessing. If you hit a 
 python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
 ```
 
----
+
 
 ## Running the API
 
@@ -113,7 +113,7 @@ Then open:
 
 > ⚠️ Run uvicorn from the **project root**, not from `src/`. The imports use `from src.schemas ...`, which requires `src` to be discoverable as a package.
 
----
+
 
 ## Running the Frontend
 
@@ -129,7 +129,7 @@ python -m http.server 5500
 
 Then visit http://127.0.0.1:5500/index.html.
 
----
+
 
 ## API Reference
 
@@ -199,7 +199,7 @@ curl -X POST "[http://127.0.0.1:8000/predict](http://127.0.0.1:8000/predict)" \
          }'
 ```
 
----
+
 
 ## Smoke Testing
 
@@ -211,7 +211,7 @@ python -m src.test_api
 
 This hits `/health`, `/model/info`, and `/predict` with two sample Pune properties (Kothrud 2BHK, Baner 3BHK) and prints the responses.
 
----
+
 
 ## Tech Stack
 
@@ -220,7 +220,7 @@ This hits `/health`, `/model/info`, and `/predict` with two sample Pune properti
 - **NLP**: NLTK (stopwords, tokenization), `CountVectorizer`
 - **Frontend**: Plain HTML / CSS / JavaScript (`fetch` against the FastAPI backend)
 
----
+
 
 ## Common Issues
 
@@ -241,6 +241,10 @@ This hits `/health`, `/model/info`, and `/predict` with two sample Pune properti
   * **Cause:** NLTK recently updated its dependencies and requires `punkt_tab`.
   * **Fix:** Ensure `nltk.download('punkt_tab')` is included in your `src/inference.py` startup logic.
 * **Scikit-Learn Feature Names Warning**
-  * **Cause:** The model was trained on a Pandas DataFrame (with column names) but prediction input is an unnamed NumPy array.
+  * **Cause:** The model was trained on a Pandas DataFrame (with column names), but the prediction input is an unnamed NumPy array.
   * **Fix:** This is handled internally in `inference.py` by converting the inference array back to a Pandas DataFrame using the saved `all_feature_names.pkl` artifact before calling `.predict()`.
 
+
+## Author
+
+**Marcos Oliveira** — [LinkedIn](https://www.linkedin.com/in/mfilho1/) | [GitHub](https://github.com/MAOFILHO)
